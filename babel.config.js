@@ -1,5 +1,1 @@
-module.exports = {
-  presets: [
-    '@vue/cli-plugin-babel/preset'
-  ]
-}
+// Deprecated: Vue CLI config is no longer used after the Vite migration.

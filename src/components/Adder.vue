@@ -1,7 +1,7 @@
 <template>
     <section class="add">
         <div class="add-close" @click="$emit('close')">
-            <img src="assets/images/icon_close.svg">
+            <img src="/assets/images/icon_close.svg">
         </div>
         <div class="wrap">
             <form class="add-form" @submit.prevent="pushCodes">

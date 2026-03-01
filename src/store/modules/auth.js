@@ -1,39 +1,44 @@
-import firebase from 'firebase/app'
+import { auth, db } from '@/firebase'
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+} from 'firebase/auth'
+import { ref, set } from 'firebase/database'
 
 export default {
     state: {
         error: null
     },
     actions: {
-        async login({commit},{email, password}) {
-            try{
-                await firebase.auth().signInWithEmailAndPassword(email, password)
-            } catch (e){
+        async login({ commit }, { email, password }) {
+            try {
+                await signInWithEmailAndPassword(auth, email, password)
+            } catch (e) {
                 commit('changeError', e)
-                console.clear();
+                console.clear()
             }
         },
-        async register ({dispatch, commit}, {email, password, firstname, lastname, avatar}){
+        async register ({ dispatch, commit }, { email, password, firstname, lastname, avatar }) {
             try {
-                await firebase.auth().createUserWithEmailAndPassword(email, password)
+                await createUserWithEmailAndPassword(auth, email, password)
                 const uid = await dispatch('getUid')
-                await firebase.database().ref(`users/${uid}/info`).set({
+                await set(ref(db, `users/${uid}/info`), {
                     firstname,
                     lastname,
                     avatar
                 })
-
             } catch (e) {
                 commit('changeError', e)
-                console.clear();
+                console.clear()
             }
         },
         getUid () {
-            const user = firebase.auth().currentUser;
-            return user ? user.uid : null;
+            const user = auth.currentUser
+            return user ? user.uid : null
         },
-        async logout ({commit}) {
-            await firebase.auth().signOut()
+        async logout ({ commit }) {
+            await signOut(auth)
             commit('clearInfo')
         }
     },

@@ -1,4 +1,5 @@
-import firebase from 'firebase/app'
+import { db } from '@/firebase'
+import { get, ref } from 'firebase/database'
 
 export default {
   state: {
@@ -13,10 +14,11 @@ export default {
     }
   },
   actions: {
-    async fetchInfo({dispatch, commit}) {
+    async fetchInfo({ dispatch, commit }) {
       try {
         const uid = await dispatch('getUid')
-        const info = (await firebase.database().ref(`/users/${uid}/info`).once('value')).val()
+        const snapshot = await get(ref(db, `/users/${uid}/info`))
+        const info = snapshot.val()
         commit('setInfo', info)
         
       } catch (e) {

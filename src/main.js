@@ -1,37 +1,25 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
+import { createHead } from '@vueuse/head'
 import App from './App.vue'
 import store from './store'
 import router from './router'
 
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/database'
-
+import { auth, onAuthStateChanged } from './firebase'
 import messagesPlugin from '@/utils/messages.plugin.js'
-import Loader from '@/components/Loader'
-import VueClipboard from 'vue-clipboard2'
-import Vuelidate from 'vuelidate'
-import VueMeta from 'vue-meta'
- 
+import Loader from '@/components/Loader.vue'
 
-Vue.component('Loader', Loader)
-Vue.use(messagesPlugin)
-Vue.use(Vuelidate)
-Vue.use(VueClipboard)
-Vue.use(VueMeta)
+let app
 
-Vue.config.productionTip = false
+const head = createHead()
 
-
-
-let app;
-
-firebase.auth().onAuthStateChanged(() => {
+onAuthStateChanged(auth, () => {
   if (!app) {
-    app = new Vue({
-      router,
-      store,
-      render: h => h(App)
-    }).$mount('#app')
+    app = createApp(App)
+    app.component('Loader', Loader)
+    app.use(store)
+    app.use(router)
+    app.use(head)
+    app.use(messagesPlugin)
+    app.mount('#app')
   }
 })

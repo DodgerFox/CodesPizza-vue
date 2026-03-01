@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Header from '@/components/Header'
-import Archive from '@/components/Archive'
+import Header from '@/components/Header.vue'
+import Archive from '@/components/Archive.vue'
 
 export default {
     name: 'History',

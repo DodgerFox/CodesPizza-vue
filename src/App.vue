@@ -10,7 +10,7 @@
 </style>
 
 <script>
-import Messages from '@/components/Messages'
+import Messages from '@/components/Messages.vue'
 import messages from '@/utils/messages'
 
 export default {

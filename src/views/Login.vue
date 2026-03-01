@@ -4,10 +4,10 @@
             <div class="wrap">
                 <form class="auth-form" @submit.prevent="submitHandler">
                     <p class="auth-text">Вход</p>
-                    <input class="auth-input" type="email" v-model.trim="email" :class="{invalid: ($v.email.$dirty && $v.email.required) || ($v.email.$dirty && $v.email.email)}" placeholder="hedgehogofmom@gmail.com" name="email" required>
-                    <input class="auth-input" type="password" v-model.trim="password" :class="{invalid: ($v.password.$dirty && $v.password.required) || ($v.password.$dirty && $v.password.minLength)}" placeholder="Приложи сетчатку глаза" required>
+                    <input class="auth-input" type="email" v-model.trim="email" :class="{invalid: v$.email.$dirty && v$.email.$invalid}" placeholder="hedgehogofmom@gmail.com" name="email" required>
+                    <input class="auth-input" type="password" v-model.trim="password" :class="{invalid: v$.password.$dirty && v$.password.$invalid}" placeholder="Приложи сетчатку глаза" required>
                     <!-- <div class="auth-social">
-                        <img src="assets/images/icon_google.svg">
+                        <img src="/assets/images/icon_google.svg">
                         <p>Войти через Google</p>
                     </div> -->
                     <div class="auth-wrap">
@@ -21,36 +21,42 @@
 </template>
 
 <script>
-import {email, required, minLength} from 'vuelidate/lib/validators'
-
+import { useHead } from '@vueuse/head'
+import useVuelidate from '@vuelidate/core'
+import { email, required, minLength } from '@vuelidate/validators'
 
 export default {
     name: 'login',
-    metaInfo: {
-        title: 'CodesPizza — Главная'
+    setup () {
+        useHead({
+            title: 'CodesPizza — Главная'
+        })
+
+        return { v$: useVuelidate() }
     },
     data: () => ({
         email: '',
         password: ''
     }),
-    validations: {
-        email: {email, required},
-        password: {required, minLength: minLength(6)}
+    validations () {
+        return {
+            email: { email, required },
+            password: { required, minLength: minLength(6) }
+        }
     },
     methods: {
         async submitHandler () {
-            if (this.$v.$invalid){
-                this.$v.$touch()
+            if (this.v$.$invalid) {
+                this.v$.$touch()
                 return
-            }else{
-                const formData = {
-                    email: this.email,
-                    password: this.password
-                }
-                await this.$store.dispatch('login', formData);
-                this.$router.push('/')
             }
-            
+
+            const formData = {
+                email: this.email,
+                password: this.password
+            }
+            await this.$store.dispatch('login', formData)
+            this.$router.push('/')
         }
     }
 }

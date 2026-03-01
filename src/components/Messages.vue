@@ -9,13 +9,21 @@ export default {
     data: () => ({
         messages: []
     }),
-    beforeCreate () {
-        this.$root.$on('msg', message => {
-            this.messages.push({message: message, color: ''})
-        })
-        this.$root.$on('err', err => {
-            this.messages.push({message: err, color: 'error'})
-        })
+    created () {
+        this.$bus.on('msg', this.onMessage)
+        this.$bus.on('err', this.onError)
+    },
+    beforeUnmount () {
+        this.$bus.off('msg', this.onMessage)
+        this.$bus.off('err', this.onError)
+    },
+    methods: {
+        onMessage (message) {
+            this.messages.push({ message, color: '' })
+        },
+        onError (err) {
+            this.messages.push({ message: err, color: 'error' })
+        }
     }
 }
 </script>

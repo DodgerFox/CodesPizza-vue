@@ -8,14 +8,17 @@
 </template>
 
 <script>
-import Header from '@/components/Header'
-import Codes from '@/components/Codes'
-import Adder from '@/components/Adder'
+import { useHead } from '@vueuse/head'
+import Header from '@/components/Header.vue'
+import Codes from '@/components/Codes.vue'
+import Adder from '@/components/Adder.vue'
 
 export default {
   name: 'Home',
-  metaInfo: {
-    title: 'CodesPizza — Главная'
+  setup () {
+    useHead({
+      title: 'CodesPizza — Главная'
+    })
   },
   data: () => ({
     loading: true,

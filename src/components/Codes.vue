@@ -12,14 +12,14 @@
                 :class="{used: !code.status}" />
             </div>
             <a class="autograph" href="http://alexey-chernov.ru/" target="_blank">
-                <img src="assets/images/logo.svg">
+                <img src="/assets/images/logo.svg">
             </a>
         </div>
     </section>
 </template>
 
 <script>
-import Code from '@/components/Code';
+import Code from '@/components/Code.vue';
 
 export default {
     name: 'Codes',
@@ -60,9 +60,9 @@ export default {
             let head = '',
                 message;
             if (code.status) {
-                this.$copyText(code.promo)
+                await this.copyText(code.promo)
                 message = 'Код скопирован'
-            }else{
+            } else {
                 message = 'Код отменен'
             }
 
@@ -84,10 +84,24 @@ export default {
                 }
             }
             await this.$store.dispatch('updateCodes', {
-                codes: this.data,
-                date: head
-            });
+                codes: this.data
+            })
             this.$message(message)
+        },
+        async copyText (text) {
+            try {
+                await navigator.clipboard.writeText(text)
+            } catch (e) {
+                const textarea = document.createElement('textarea')
+                textarea.value = text
+                textarea.style.position = 'fixed'
+                textarea.style.opacity = '0'
+                document.body.appendChild(textarea)
+                textarea.focus()
+                textarea.select()
+                document.execCommand('copy')
+                document.body.removeChild(textarea)
+            }
         },
         getDate () {
             const todayDate = new Date ();

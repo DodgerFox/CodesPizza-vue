@@ -1,18 +1,18 @@
 <template>
   <header class="header">
     <div class="user" @click="openMenu()" :class="{open: menu}">
-      <div class="user__avatar" :style="{ backgroundImage: 'url('+'assets/images/avatars/' + avatar + '.jpg'+')' }"></div>
+  <div class="user__avatar" :style="{ backgroundImage: `url(/assets/images/avatars/${avatar}.jpg)` }"></div>
       <div class="user__name">{{ userName }}</div>
       <ul class="user-list">
         <li class="user-list__item history def">
-          <router-link to="/history" tag="div" class="user-container">
-            <img src="assets/images/icon_history.svg">
+          <router-link to="/history" class="user-container">
+            <img src="/assets/images/icon_history.svg">
             <p>Использованные</p>
           </router-link>
         </li>
         <li class="user-list__item logout" @click="logout()">
           <div class="user-container">
-            <img src="assets/images/icon_logout.svg">
+            <img src="/assets/images/icon_logout.svg">
             <p>Выйти</p>
           </div>
         </li>
@@ -21,7 +21,7 @@
     <div class="panel">
       <div class="panel-add" @click="$emit('adder')">
         <div class="panel-add__icon">
-          <img src="assets/images/icon_plus.svg">
+          <img src="/assets/images/icon_plus.svg">
         </div>
         <p>Добавить коды</p>
       </div>

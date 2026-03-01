@@ -1,11 +1,13 @@
 
+import mitt from 'mitt'
+
+const emitter = mitt()
+
 export default {
-    install(Vue){
-        Vue.prototype.$message = function(message) {
-            this.$root.$emit('msg', message)
-        }
-        Vue.prototype.$error = function(err) {
-            this.$root.$emit('err', err)
-        }
+    install(app) {
+        app.config.globalProperties.$bus = emitter
+        app.config.globalProperties.$message = (message) => emitter.emit('msg', message)
+        app.config.globalProperties.$error = (err) => emitter.emit('err', err)
+        app.provide('bus', emitter)
     }
 }

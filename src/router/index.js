@@ -1,10 +1,6 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import firebase from 'firebase/app'
-import 'firebase/auth'
-
-Vue.use(VueRouter)
+import { auth } from '@/firebase'
 
 const routes = [
   {
@@ -18,7 +14,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login'),
+  component: () => import('@/views/Login.vue'),
     meta: {
       auth: false
     }
@@ -26,7 +22,7 @@ const routes = [
   {
     path: '/registration',
     name: 'Registration',
-    component: () => import('@/views/Registration'),
+  component: () => import('@/views/Registration.vue'),
     meta: {
       auth: false
     }
@@ -34,7 +30,7 @@ const routes = [
   {
     path: '/history',
     name: 'History',
-    component: () => import('@/views/History'),
+  component: () => import('@/views/History.vue'),
     meta: {
       auth: true
     }
@@ -42,7 +38,7 @@ const routes = [
   {
     path: '/policy',
     name: 'Policy',
-    component: () => import('@/views/Policy'),
+  component: () => import('@/views/Policy.vue'),
     meta: {
       auth: false
     }
@@ -50,36 +46,34 @@ const routes = [
   {
     path: '/conditions',
     name: 'Conditions',
-    component: () => import('@/views/Conditions'),
+  component: () => import('@/views/Conditions.vue'),
     meta: {
       auth: false
     }
   },
   {
-    path: '*',
-    component: () => import('@/views/404'),
+    path: '/:pathMatch(.*)*',
+  component: () => import('@/views/404.vue'),
     meta: {
       auth: false
     }
   }
 ]
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 
-router.beforeEach((to, from, next) =>{
-  const currentUser = firebase.auth().currentUser;
-  const requireAuth = to.matched.some(forum => forum.meta.auth)
-  
+router.beforeEach((to, from, next) => {
+  const currentUser = auth.currentUser
+  const requireAuth = to.matched.some(route => route.meta.auth)
 
-  if (requireAuth && !currentUser){
+  if (requireAuth && !currentUser) {
     next('/login')
   } else {
     next()
-  } 
+  }
 })
 
 export default router

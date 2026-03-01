@@ -12,16 +12,16 @@
                     <span>Это поле должно иметь только буквы</span>
                 </div>
                 <div class="auth-container">
-                    <input class="auth-input" type="email" name="email" v-model.trim="email" :class="{invalid: ($v.email.$dirty && $v.email.required) || ($v.email.$dirty && $v.email.email)}" placeholder="hedgehogofmom@gmail.com" required>
+                    <input class="auth-input" type="email" name="email" v-model.trim="email" :class="{invalid: v$.email.$dirty && v$.email.$invalid}" placeholder="hedgehogofmom@gmail.com" required>
                 </div>
                 <div class="auth-container">
-                    <input class="auth-input" type="password" name="password" v-model.trim="password" :class="{invalid: ($v.password.$dirty && $v.password.required) || ($v.password.$dirty && $v.password.minLength)}" placeholder="Приложи сетчатку глаза" required>
+                    <input class="auth-input" type="password" name="password" v-model.trim="password" :class="{invalid: v$.password.$dirty && v$.password.$invalid}" placeholder="Приложи сетчатку глаза" required>
                 </div>
                 <div class="auth-container">
-                    <input class="auth-input" type="password" name="password" v-model.trim="repeatPassword" placeholder="Приложи сетчатку носа" :class="{invalid: ($v.password.$dirty && $v.password.required) || ($v.password.$dirty && $v.password.minLength)}" required>
+                    <input class="auth-input" type="password" name="password" v-model.trim="repeatPassword" placeholder="Приложи сетчатку носа" :class="{invalid: v$.repeatPassword.$dirty && v$.repeatPassword.$invalid}" required>
                 </div>
                 <!-- <div class="auth-social">
-                    <img src="assets/images/icon_google.svg">
+                    <img src="/assets/images/icon_google.svg">
                     <p>Войти через Google</p>
                 </div> -->
                 <div class="auth-checkbox">
@@ -39,52 +39,61 @@
 </template>
 
 <script>
-import {email, required, sameAs, minLength, helpers} from 'vuelidate/lib/validators'
+import { useHead } from '@vueuse/head'
+import useVuelidate from '@vuelidate/core'
+import { email, required, sameAs, minLength, helpers } from '@vuelidate/validators'
 
-const alpha = helpers.regex('alpha', /^[а-яА-Яa-zA-Z\s]*$/);
+const alpha = helpers.regex('alpha', /^[а-яА-Яa-zA-Z\s]*$/)
 
 export default {
     name: 'Registration',
-    metaInfo: {
-        title: 'CodesPizza — Регистрация'
+    setup () {
+        useHead({
+            title: 'CodesPizza — Регистрация'
+        })
+
+        return { v$: useVuelidate() }
     },
     data: () => ({
         email: '',
         password: '',
-        repeatPassword: {
-            sameAsPassword: sameAs('password')
-        },
+        repeatPassword: '',
         firstname: '',
         lastname: ''
     }),
-    validations: {
-        email: {email, required},
-        password: {required, minLength: minLength(6)},
-        repeatPassword: {required, minLength: minLength(6)},
-        firstname: {required, alpha},
-        lastname: {required, alpha}
+    validations () {
+        return {
+            email: { email, required },
+            password: { required, minLength: minLength(6) },
+            repeatPassword: {
+                required,
+                minLength: minLength(6),
+                sameAsPassword: sameAs(() => this.password)
+            },
+            firstname: { required, alpha },
+            lastname: { required, alpha }
+        }
     },
     methods: {
         async submitHandler () {
-            if (this.$v.$invalid){
-                this.$v.$touch()
-                console.log(this.$v);
-                
+            if (this.v$.$invalid) {
+                this.v$.$touch()
                 return
-            }else{
-                const formData = {
-                    email: this.email,
-                    password: this.password,
-                    firstname: this.firstname,
-                    lastname: this.lastname,
-                    avatar: this.generateAvatar()
-                }
-                try{
-                    await this.$store.dispatch('register', formData);
-                    this.$router.push('/');
-                } catch (e) {e}
             }
-            
+
+            const formData = {
+                email: this.email,
+                password: this.password,
+                firstname: this.firstname,
+                lastname: this.lastname,
+                avatar: this.generateAvatar()
+            }
+            try {
+                await this.$store.dispatch('register', formData)
+                this.$router.push('/')
+            } catch (e) {
+                e
+            }
         },
         generateAvatar () {
             const links = [
@@ -92,14 +101,14 @@ export default {
                 'animal-dog.jpg',
                 'animal-cham.jpg',
                 'animal-horse.jpg'
-            ];
+            ]
             function randomInteger(min, max) {
-                let rand = min + Math.random() * (max + 1 - min);
-                return Math.floor(rand);
+                let rand = min + Math.random() * (max + 1 - min)
+                return Math.floor(rand)
             }
-            const number = randomInteger(0, 3);
+            const number = randomInteger(0, 3)
             const avatar = links[number]
-            return avatar;
+            return avatar
         }
     }
 

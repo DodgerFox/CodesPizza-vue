@@ -1,9 +1,1 @@
-module.exports = {
-  css: {
-    loaderOptions: {
-      stylus: {
-        use: [require('rupture')()]
-      },
-    }
-  }
-}
+// Deprecated: Vue CLI config is no longer used after the Vite migration.

@@ -1,9 +1,10 @@
-import firebase from 'firebase/app'
+import { db } from '@/firebase'
+import { get, push, ref, update } from 'firebase/database'
 
 export default {
     state: {},
     actions: {
-        async addCodes ({dispatch}, codes) {
+        async addCodes ({ dispatch }, codes) {
             const todayDate = new Date();
             const currYear = todayDate.getFullYear();
             const currMonth = todayDate.getMonth()+1;
@@ -11,12 +12,13 @@ export default {
             const date = currDay + "-" + currMonth + "-" + currYear;
             
             const uid = await dispatch('getUid');
-            await firebase.database().ref(`users/${uid}/codes/${date}`).push(codes);
+            await push(ref(db, `users/${uid}/codes/${date}`), codes)
         },
         async fetchCodes({dispatch, commit}) {
             try {
               const uid = await dispatch('getUid')
-              const codes = (await firebase.database().ref(`/users/${uid}/codes`).once('value')).val() || {}
+              const snapshot = await get(ref(db, `/users/${uid}/codes`))
+              const codes = snapshot.val() || {}
               
               return codes;
             } catch (e) {
@@ -24,10 +26,9 @@ export default {
               throw e
             }
           },
-        async updateCodes ({dispatch}, {codes, date}) {
+        async updateCodes ({ dispatch }, { codes }) {
             const uid = await dispatch('getUid');
-            date
-            await firebase.database().ref(`users/${uid}/codes/`).update(codes);
+            await update(ref(db, `users/${uid}/codes/`), codes)
           }
     },
     mutations: {},
