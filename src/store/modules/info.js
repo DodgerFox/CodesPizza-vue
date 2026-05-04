@@ -1,5 +1,4 @@
-import { db } from '@/firebase'
-import { get, ref } from 'firebase/database'
+import { getUserInfo } from '@/firebase'
 
 export default {
   state: {
@@ -17,8 +16,11 @@ export default {
     async fetchInfo({ dispatch, commit }) {
       try {
         const uid = await dispatch('getUid')
-        const snapshot = await get(ref(db, `/users/${uid}/info`))
-        const info = snapshot.val()
+        if (!uid) {
+          commit('setInfo', {})
+          return
+        }
+        const info = getUserInfo(uid)
         commit('setInfo', info)
         
       } catch (e) {

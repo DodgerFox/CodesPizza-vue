@@ -1,5 +1,4 @@
-import { db } from '@/firebase'
-import { get, push, ref, update } from 'firebase/database'
+import { addUserCodes, getUserCodes, setUserCodes } from '@/firebase'
 
 export default {
     state: {},
@@ -12,13 +11,14 @@ export default {
             const date = currDay + "-" + currMonth + "-" + currYear;
             
             const uid = await dispatch('getUid');
-            await push(ref(db, `users/${uid}/codes/${date}`), codes)
+            if (!uid) return
+            addUserCodes(uid, date, codes)
         },
         async fetchCodes({dispatch, commit}) {
             try {
               const uid = await dispatch('getUid')
-              const snapshot = await get(ref(db, `/users/${uid}/codes`))
-              const codes = snapshot.val() || {}
+              if (!uid) return {}
+              const codes = getUserCodes(uid)
               
               return codes;
             } catch (e) {
@@ -28,7 +28,8 @@ export default {
           },
         async updateCodes ({ dispatch }, { codes }) {
             const uid = await dispatch('getUid');
-            await update(ref(db, `users/${uid}/codes/`), codes)
+            if (!uid) return
+            setUserCodes(uid, codes)
           }
     },
     mutations: {},

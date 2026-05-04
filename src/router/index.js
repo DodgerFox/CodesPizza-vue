@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import { auth } from '@/firebase'
 
@@ -52,6 +52,10 @@ const routes = [
     }
   },
   {
+    path: '/index.html',
+    redirect: '/'
+  },
+  {
     path: '/:pathMatch(.*)*',
   component: () => import('@/views/404.vue'),
     meta: {
@@ -61,7 +65,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes
 })
 

@@ -41,7 +41,7 @@
 <script>
 import { useHead } from '@vueuse/head'
 import useVuelidate from '@vuelidate/core'
-import { email, required, sameAs, minLength, helpers } from '@vuelidate/validators'
+import { email, required, minLength, helpers } from '@vuelidate/validators'
 
 const alpha = helpers.regex('alpha', /^[а-яА-Яa-zA-Z\s]*$/)
 
@@ -68,7 +68,10 @@ export default {
             repeatPassword: {
                 required,
                 minLength: minLength(6),
-                sameAsPassword: sameAs(() => this.password)
+                sameAsPassword: helpers.withMessage(
+                    'Пароли не совпадают',
+                    (value) => value === this.password
+                )
             },
             firstname: { required, alpha },
             lastname: { required, alpha }

@@ -1,10 +1,10 @@
-import { auth, db } from '@/firebase'
 import {
+    auth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signOut
-} from 'firebase/auth'
-import { ref, set } from 'firebase/database'
+    signOut,
+    setUserInfo
+} from '@/firebase'
 
 export default {
     state: {
@@ -17,13 +17,14 @@ export default {
             } catch (e) {
                 commit('changeError', e)
                 console.clear()
+                throw e
             }
         },
         async register ({ dispatch, commit }, { email, password, firstname, lastname, avatar }) {
             try {
                 await createUserWithEmailAndPassword(auth, email, password)
                 const uid = await dispatch('getUid')
-                await set(ref(db, `users/${uid}/info`), {
+                setUserInfo(uid, {
                     firstname,
                     lastname,
                     avatar
@@ -31,6 +32,7 @@ export default {
             } catch (e) {
                 commit('changeError', e)
                 console.clear()
+                throw e
             }
         },
         getUid () {
